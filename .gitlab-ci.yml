@@ -1,6 +1,6 @@
 image: docker:latest
 
-variabels:
+variables:
   REPOSITORY_URL: djlaoe/apitodo-cicd
   IMAGE_TAG: latest
 
@@ -17,14 +17,14 @@ stages:
 build:
   stage: build
   script:
-    - echo "Building Image..."
-    - docker build
-      - t apitodo-cicd:latest
-      -- build-arg PORT=$PORT
-      -- no-cache
+    - echo "Building image..."
+    - docker build 
+      -t apitodo-cicd:latest 
+      --build-arg PORT=$PORT 
+      --no-cache .
     - echo "Tagging image..."
     - docker tag apitodo-cicd:latest $REPOSITORY_URL:latest
-    - echo "Pushing Image..."
+    - echo "Pushing image..."
     - docker push $REPOSITORY_URL:latest
   only:
     - master
@@ -32,8 +32,9 @@ build:
 deploy:
   stage: deploy
   script:
-    - docker stop apitodo-cicd || true && docker rm apitodo-cicd ||todo
+    - docker stop apitodo-cicd || true && docker rm apitodo-cicd || true
     - docker container run -dt -p $PORT:$PORT --name apitodo-cicd $REPOSITORY_URL:latest
     - docker image prune -f
   only:
     - master
+    
